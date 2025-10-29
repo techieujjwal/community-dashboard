@@ -1,14 +1,20 @@
-import { auth } from "../services/firebase.js";
+import { admin } from "../services/firebase.js";
 
-export default async function verifyToken(req, res, next) {
-  const token = req.headers.authorization?.split("Bearer ")[1];
-  if (!token) return res.status(401).json({ message: "No token provided" });
+export const verifyToken = async (req, res, next) => {
+  const header = req.headers.authorization;
+
+  if (!header || !header.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Unauthorized: No token provided" });
+  }
+
+  const idToken = header.split("Bearer ")[1];
 
   try {
-    const decoded = await auth.verifyIdToken(token);
-    req.user = decoded;
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    req.user = decodedToken; // contains uid, email, etc.
     next();
-  } catch (error) {
-    res.status(401).json({ message: "Invalid token" });
+  } catch (err) {
+    console.error("Token verification failed:", err);
+    return res.status(403).json({ error: "Invalid or expired token" });
   }
-}
+};
