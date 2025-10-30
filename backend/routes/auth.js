@@ -1,6 +1,6 @@
 import express from "express";
 import { db } from "../services/firebase.js";
-import { verifyToken } from "../middlewares/verifyToken.js";
+import { verifyToken } from "../middleware/verifyToken.js";
 
 const router = express.Router();
 
