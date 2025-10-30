@@ -1,1 +1,4 @@
 config/serviceAccountKey.json
+# Firebase private keys
+backend/serviceAccountKey1.json
+backend/services/firebaseServiceAccount.json
