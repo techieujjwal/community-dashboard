@@ -1,18 +1,18 @@
+// services/firebase.js
+import admin from "firebase-admin";
 import dotenv from "dotenv";
+import serviceAccount from "../config/serviceAccountKey.json" assert { type: "json" };
+
 dotenv.config();
 
-import admin from "firebase-admin";
+// Initialize Firebase Admin only once
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+}
 
-import fs from "fs";
-
-const serviceAccount = JSON.parse(
-  fs.readFileSync(new URL("./firebaseServiceAccount.json", import.meta.url))
-);
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
-
-const db = admin.firestore();
-
-export { admin, db };
+// Export initialized services
+export const db = admin.firestore();
+export const auth = admin.auth();
+export { admin };

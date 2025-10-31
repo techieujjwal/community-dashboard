@@ -1,3 +1,4 @@
+//services/firestoreSchema.js
 // FIRESTORE COLLECTION NAMES
 export const collections = {
   USERS: "users",

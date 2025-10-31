@@ -1,4 +1,5 @@
 import { admin } from "../services/firebase.js";
+// import { getAuth } from "firebase/auth";
 
 export const verifyToken = async (req, res, next) => {
   console.log("[LOG] verifyToken middleware triggered");

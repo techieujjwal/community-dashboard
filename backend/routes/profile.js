@@ -1,25 +1,42 @@
 import express from "express";
-import verifyToken from "../middlewares/verifyToken.js";
+import { verifyToken } from "../middleware/verifyToken.js";
 import { db } from "../services/firebase.js";
-import { collections, userSchema } from "../services/firestoreSchema.js";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 const router = express.Router();
 
-router.post("/setup", verifyToken, async (req, res) => {
-  const userId = req.user.uid;
-  const { name, bio, photoURL } = req.body;
+// GET /profile/me → Get logged-in user's profile
+router.get("/me", verifyToken, async (req, res) => {
+  try {
+    const { uid } = req.user;
+    const userRef = doc(db, "users", uid);
+    const userSnap = await getDoc(userRef);
 
-  const newUser = {
-    ...userSchema,
-    name,
-    bio,
-    photoURL,
-    email: req.user.email,
-    updatedAt: new Date(),
-  };
+    if (!userSnap.exists()) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
 
-  await db.collection(collections.USERS).doc(userId).set(newUser);
-  res.json({ message: "Profile saved", user: newUser });
+    res.json({ success: true, user: { uid, ...userSnap.data() } });
+  } catch (err) {
+    console.error("[ERROR] Fetching profile:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// PUT /profile/update → Update logged-in user's profile
+router.put("/update", verifyToken, async (req, res) => {
+  try {
+    const { uid } = req.user;
+    const updates = req.body;
+
+    const userRef = doc(db, "users", uid);
+    await updateDoc(userRef, updates);
+
+    res.json({ success: true, message: "Profile updated successfully" });
+  } catch (err) {
+    console.error("[ERROR] Updating profile:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 export default router;

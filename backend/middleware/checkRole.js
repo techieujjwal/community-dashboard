@@ -1,23 +1,40 @@
+// middleware/checkRole.js
 import { db } from "../services/firebase.js";
+import { permissions } from "./permissions.js";
 
-export default function checkRole(requiredRole) {
+export const checkRole = (requiredPermission) => {
   return async (req, res, next) => {
-    const { communityId } = req.params;
-    const userId = req.user.uid;
+    try {
+      const userId = req.user.uid;
+      const { communityId } = req.params;
 
-    const memberQuery = await db.collection("members")
-      .where("communityId", "==", communityId)
-      .where("userId", "==", userId)
-      .limit(1)
-      .get();
+      if (!communityId) {
+        return res.status(400).json({ error: "Missing community ID in params" });
+      }
 
-    if (memberQuery.empty) return res.status(403).json({ message: "Not a member" });
-    const member = memberQuery.docs[0].data();
+      const roleDoc = await db
+        .collection("communities")
+        .doc(communityId)
+        .collection("roles")
+        .doc(userId)
+        .get();
 
-    if (member.role !== requiredRole && requiredRole === "admin") {
-      return res.status(403).json({ message: "Admin access only" });
+      if (!roleDoc.exists) {
+        return res.status(403).json({ error: "You are not a member of this community" });
+      }
+
+      const { role } = roleDoc.data();
+      const rolePerms = permissions[role];
+
+      if (!rolePerms || !rolePerms[requiredPermission]) {
+        return res.status(403).json({ error: "Access denied: insufficient permissions" });
+      }
+
+      req.user.role = role;
+      next();
+    } catch (err) {
+      console.error("Error in checkRole:", err);
+      res.status(500).json({ error: "Internal server error" });
     }
-
-    next();
   };
-}
+};
