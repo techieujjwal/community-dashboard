@@ -11,6 +11,7 @@ import EditCommunity from "./pages/editCommunity";
 function App() {
   return (
     <div>
+      {/* Simple NavBar */}
       <nav style={{ display: "flex", gap: "20px", padding: "10px" }}>
         <Link to="/">Home</Link>
         <Link to="/login">Login</Link>
@@ -19,13 +20,17 @@ function App() {
         <Link to="/community">Communities</Link>
       </nav>
 
+      {/* App Routes */}
       <Routes>
+        {/* Public Pages */}
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+
+        {/* Protected / Dashboard */}
         <Route path="/dashboard" element={<Dashboard />} />
 
-        {/* CRUD */}
+        {/* Community CRUD */}
         <Route path="/community" element={<CommunityList />} />
         <Route path="/community/create" element={<CreateCommunity />} />
         <Route path="/community/:id" element={<ViewCommunity />} />

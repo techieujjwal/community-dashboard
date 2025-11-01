@@ -131,3 +131,18 @@ export const getCommunityAnalytics = async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 };
+
+export const getCommunityById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const doc = await db.collection("communities").doc(id).get();
+    if (!doc.exists) {
+      return res.status(404).json({ success: false, error: "Community not found" });
+    }
+    res.json({ success: true, data: { id: doc.id, ...doc.data() } });
+  } catch (err) {
+    console.error("[ERROR] getCommunityById:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+

@@ -20,7 +20,7 @@ export default function CreateCommunity() {
       const user = auth.currentUser;
       const idToken = await user?.getIdToken();
 
-      const res = await fetch("http://localhost:5000/community/create", {
+      const res = await fetch("http://localhost:5000/api/community/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

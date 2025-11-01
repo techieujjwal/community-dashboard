@@ -4,37 +4,40 @@ import { auth, provider } from "../firebase";
 
 export default function Login() {
   const navigate = useNavigate();
+
   const handleGoogleLogin = async () => {
     try {
-      const result = await signInWithPopup(auth,provider);
+      const result = await signInWithPopup(auth, provider);
       const user = result.user;
       const idToken = await user.getIdToken();
-      if(user) {
-        console.log("[TOKEN] Firebase ID Token:", idToken);
-      }
-      const res = await fetch("http://localhost:5000/auth/login",{
+
+      console.log("[TOKEN] Firebase ID Token:", idToken);
+
+      const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${idToken}`,
-        }
+        },
       });
-      const data = await await res.json();
-      console.log("[RESP] Backend response: ",data);
-      if(res.ok) {
+
+      const data = await res.json();
+      console.log("[RESP] Backend response:", data);
+
+      if (res.ok) {
         navigate("/dashboard");
       } else {
-        alert("Invalid Credentials!");
+        alert(data.error || "Login failed!");
       }
-    } catch(err) {
-      console.error("[FAILED] Login failed: ",err);
+    } catch (err) {
+      console.error("[FAILED] Login failed:", err);
     }
-  }
+  };
+
   return (
     <div style={styles.container}>
       <h2>Login</h2>
 
-      {/* Old email/password form (optional – you can remove it) */}
       <form style={styles.form}>
         <input type="email" placeholder="Email" style={styles.input} disabled />
         <input type="password" placeholder="Password" style={styles.input} disabled />

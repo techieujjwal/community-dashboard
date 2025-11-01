@@ -9,6 +9,7 @@ import analyticsRoutes from "./routes/analytics.js";
 import eventRoutes from "./routes/events.js";
 import postRoutes from "./routes/posts.js";
 import chatRoutes from "./routes/chats.js";
+import dashboardRoutes from "./routes/dashboard.js"
 
 // Middleware Imports
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -25,13 +26,14 @@ app.use(cors({
 app.use(express.json());
 
 // Base Routes
-app.use("/auth", authRoutes);
-app.use("/profile", profileRoutes);
-app.use("/community", communityRoutes);
-app.use("/analytics", verifyToken, analyticsRoutes); // protected by token
-app.use("/events", verifyToken, eventRoutes);
-app.use("/posts", verifyToken, postRoutes);
-app.use("/chat", verifyToken, chatRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/profile", profileRoutes);
+app.use("/api/community", communityRoutes);
+app.use("/api/analytics", verifyToken, analyticsRoutes); // protected by token
+app.use("/api/events", verifyToken, eventRoutes);
+app.use("/api/posts", verifyToken, postRoutes);
+app.use("/api/chat", verifyToken, chatRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // Health Check Route
 app.get("/", (req, res) => res.send("[SERVER] Community Engagement Hub Backend is running"));

@@ -5,7 +5,8 @@ import {
   createCommunity,
   editCommunity,
   logCommunityInteraction,
-  getCommunityAnalytics
+  getCommunityAnalytics,
+  getCommunityById,
 } from "../controllers/communityController.js";
 
 const router = express.Router();
@@ -15,5 +16,6 @@ router.post("/create", verifyToken, createCommunity);
 router.put("/edit/:id", verifyToken, editCommunity);
 router.post("/:id/interact", verifyToken, logCommunityInteraction);
 router.get("/analytics/:id", verifyToken, getCommunityAnalytics);
+router.get("/:id", verifyToken, getCommunityById);
 
 export default router;

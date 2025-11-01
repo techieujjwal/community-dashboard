@@ -11,7 +11,7 @@ export default function CommunityList() {
         const user = auth.currentUser;
         const idToken = await user?.getIdToken();
 
-        const res = await fetch("http://localhost:5000/community", {
+        const res = await fetch("http://localhost:5000/api/community", {
           headers: { Authorization: `Bearer ${idToken}` },
         });
         const data = await res.json();
@@ -27,7 +27,7 @@ export default function CommunityList() {
   return (
     <div style={{ padding: "30px" }}>
       <h2>All Communities</h2>
-      <Link to="/community/create">➕ Create New Community</Link>
+      <Link to="/api/community/create">➕ Create New Community</Link>
       <ul>
         {communities.map((c) => (
           <li key={c.id}>

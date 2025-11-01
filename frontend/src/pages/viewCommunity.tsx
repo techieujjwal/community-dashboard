@@ -13,7 +13,7 @@ export default function ViewCommunity() {
         const user = auth.currentUser;
         const idToken = await user?.getIdToken();
 
-        const res = await fetch(`http://localhost:5000/community/${id}`, {
+        const res = await fetch(`http://localhost:5000/api/community/${id}`, {
           headers: { Authorization: `Bearer ${idToken}` },
         });
         const data = await res.json();
@@ -30,7 +30,7 @@ export default function ViewCommunity() {
     if (!window.confirm("Are you sure you want to delete this community?")) return;
     try {
       const idToken = await auth.currentUser?.getIdToken();
-      const res = await fetch(`http://localhost:5000/community/${id}`, {
+      const res = await fetch(`http://localhost:5000/api/community/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${idToken}` },
       });

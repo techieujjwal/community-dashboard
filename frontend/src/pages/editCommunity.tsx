@@ -10,7 +10,7 @@ export default function EditCommunity() {
   useEffect(() => {
     const fetchCommunity = async () => {
       const idToken = await auth.currentUser?.getIdToken();
-      const res = await fetch(`http://localhost:5000/community/${id}`, {
+      const res = await fetch(`http://localhost:5000/api/community/${id}`, {
         headers: { Authorization: `Bearer ${idToken}` },
       });
       const data = await res.json();
@@ -27,7 +27,7 @@ export default function EditCommunity() {
     e.preventDefault();
     try {
       const idToken = await auth.currentUser?.getIdToken();
-      const res = await fetch(`http://localhost:5000/community/${id}`, {
+      const res = await fetch(`http://localhost:5000/api/community/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -14,10 +14,10 @@ export default function Dashboard() {
 
       try {
         const [profileRes, communityRes] = await Promise.all([
-          fetch("http://localhost:5000/profile", {
+          fetch("http://localhost:5000/api/profile/me", {
             headers: { Authorization: `Bearer ${idToken}` },
           }),
-          fetch("http://localhost:5000/community", {
+          fetch("http://localhost:5000/api/community", {
             headers: { Authorization: `Bearer ${idToken}` },
           }),
         ]);
@@ -25,8 +25,10 @@ export default function Dashboard() {
         const profileData = await profileRes.json();
         const communityData = await communityRes.json();
 
-        setProfile(profileData.data);
-        setCommunities(communityData.data || []);
+        setProfile(profileData.user);
+        setCommunities(communityData.communities || []);
+        console.log(profileData, communityData);
+
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
       } finally {
