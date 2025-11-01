@@ -1,150 +1,113 @@
-// import { useEffect, useState } from "react";
-// import { collection, query, where, getDocs } from "firebase/firestore";
-// import { db } from "../firebase";
-// import { useAuth } from "../hooks/useAuth";
-// import { useNavigate } from "react-router-dom";
-
-// interface Community {
-//   id: string;
-//   name: string;
-//   description: string;
-//   owner: string;
-//   roles?: Record<string, string>; // userId -> role
-// }
-
-// export default function CommunityList() {
-//   const { user } = useAuth();
-//   const navigate = useNavigate();
-//   const [communities, setCommunities] = useState<Community[]>([]);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     const fetchCommunities = async () => {
-//       if (!user) return;
-//       try {
-//         const userCommunities: Community[] = [];
-
-//         // Fetch communities owned by the user
-//         const q1 = query(collection(db, "communities"), where("owner", "==", user.uid));
-//         const snapshot1 = await getDocs(q1);
-//         snapshot1.forEach((doc) => {
-//           const data = doc.data() as Omit<Community, "id">;
-//           userCommunities.push({ ...data, id: doc.id });
-//         });
-
-//         // Fetch communities where the user is listed in roles
-//         const q2 = query(collection(db, "communities"));
-//         const snapshot2 = await getDocs(q2);
-//         snapshot2.forEach((doc) => {
-//           const data = doc.data() as Omit<Community, "id">;
-//           if (data.roles && data.roles[user.uid] && !userCommunities.some((c) => c.id === doc.id)) {
-//             userCommunities.push({ ...data, id: doc.id });
-//           }
-//         });
-
-//         setCommunities(userCommunities);
-//       } catch (err) {
-//         console.error("Error fetching communities:", err);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchCommunities();
-//   }, [user]);
-
-//   if (loading) return <p>Loading communities...</p>;
-
-//   return (
-//     <div style={styles.container}>
-//       <h2>Your Communities</h2>
-
-//       <button style={styles.createBtn} onClick={() => navigate("/onboarding")}>
-//         ➕ Create New Community
-//       </button>
-
-//       {communities.length === 0 ? (
-//         <p>You haven’t joined or created any communities yet.</p>
-//       ) : (
-//         <ul style={styles.list}>
-//           {communities.map((community) => (
-//             <li
-//               key={community.id}
-//               style={styles.card}
-//               onClick={() => navigate(`/view-community/${community.id}`)}
-//             >
-//               <h3>{community.name}</h3>
-//               <p>{community.description}</p>
-//               <small>
-//                 Role:{" "}
-//                 {community.owner === user?.uid
-//                   ? "Owner"
-//                   : community.roles?.[user?.uid || ""] || "Member"}
-//               </small>
-//             </li>
-//           ))}
-//         </ul>
-//       )}
-//     </div>
-//   );
-// }
-
-// const styles: Record<string, React.CSSProperties> = {
-//   container: { padding: "30px", textAlign: "left" },
-//   createBtn: {
-//     padding: "10px 15px",
-//     marginBottom: "20px",
-//     backgroundColor: "#4CAF50",
-//     color: "white",
-//     border: "none",
-//     borderRadius: "6px",
-//     cursor: "pointer",
-//   },
-//   list: { listStyle: "none", padding: 0 },
-//   card: {
-//     backgroundColor: "#f5f5f5",
-//     padding: "15px",
-//     borderRadius: "8px",
-//     marginBottom: "10px",
-//     cursor: "pointer",
-//     transition: "0.2s",
-//   },
-// };
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
 import { Community } from "../types";
+import { useAuth } from "../hooks/useAuth";
 
 export default function CommunityList() {
   const [communities, setCommunities] = useState<Community[]>([]);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const { user, authReady } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCommunities = async () => {
-      const querySnapshot = await getDocs(collection(db, "communities"));
-      const fetchedCommunities: Community[] = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as Omit<Community, "id">),
-      }));
-      setCommunities(fetchedCommunities);
+      if (!authReady) return;
+      if (!user) {
+        navigate("/login");
+        return;
+      }
+
+      try {
+        // Fetch communities created by the logged-in user
+        const q = query(
+          collection(db, "communities"),
+          where("ownerId", "==", user.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        const fetchedCommunities: Community[] = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...(doc.data() as Omit<Community, "id">),
+        }));
+        setCommunities(fetchedCommunities);
+      } catch (error) {
+        console.error("Error fetching communities:", error);
+      }
+    };
+
+    const fetchRole = async () => {
+      const token = localStorage.getItem("authToken");
+      if (!token) return;
+
+      try {
+        const res = await fetch("/api/verifyRole", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        });
+
+        const data = await res.json();
+        setUserRole(data.role);
+      } catch (err) {
+        console.error("Error fetching role:", err);
+      }
     };
 
     fetchCommunities();
-  }, []);
+    fetchRole();
+  }, [user, authReady, navigate]);
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Communities</h1>
-      <ul className="space-y-4">
-        {communities.map((community) => (
-          <li
-            key={community.id}
-            className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
-          >
-            <h2 className="text-lg font-semibold">{community.name}</h2>
-            <p className="text-gray-600">{community.description}</p>
-          </li>
-        ))}
-      </ul>
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">My Communities</h1>
+        <button
+          onClick={() => navigate("/onboarding")}
+          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+        >
+          + Create New Community
+        </button>
+      </div>
+
+      {/* Community List */}
+      {communities.length === 0 ? (
+        <p className="text-gray-500">You haven’t created any communities yet.</p>
+      ) : (
+        <ul className="space-y-4">
+          {communities.map((community) => (
+            <li
+              key={community.id}
+              className="p-5 border rounded-lg shadow-sm hover:shadow-md transition bg-white"
+            >
+              <h2 className="text-xl font-semibold text-gray-800">
+                {community.name}
+              </h2>
+              <p className="text-gray-600 mb-3">
+                {community.description || "No description available."}
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => navigate(`/community/${community.id}`)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                >
+                  View
+                </button>
+
+                {(userRole === "admin" || userRole === "creator") && (
+                  <button
+                    onClick={() => navigate(`/community/edit/${community.id}`)}
+                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition"
+                  >
+                    Edit
+                  </button>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

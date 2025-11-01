@@ -1,5 +1,7 @@
 // communityController.js
 import { admin } from "../services/firebase.js";
+import * as communityService from "../services/communityService.js";
+
 const db = admin.firestore();
 
 // Get all communities
@@ -135,14 +137,10 @@ export const getCommunityAnalytics = async (req, res) => {
 export const getCommunityById = async (req, res) => {
   try {
     const { id } = req.params;
-    const doc = await db.collection("communities").doc(id).get();
-    if (!doc.exists) {
-      return res.status(404).json({ success: false, error: "Community not found" });
-    }
-    res.json({ success: true, data: { id: doc.id, ...doc.data() } });
+    const community = await communityService.getCommunityById(id);
+    res.json(community);
   } catch (err) {
     console.error("[ERROR] getCommunityById:", err);
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
-

@@ -26,35 +26,31 @@ export default function Onboarding() {
 
   const [loading, setLoading] = useState(true);
 
+  // Check if user already owns a community
   useEffect(() => {
     const checkExistingCommunity = async () => {
-      if (!authReady) {
-        console.log("[DEBUG] Waiting for Firebase Auth to initialize...");
-        return;
-      }
-
+      if (!authReady) return; // wait for Firebase to initialize
       if (!user) {
-        console.log("[DEBUG] No user found — redirecting to login");
         navigate("/login");
         return;
       }
 
       try {
-        console.log("[DEBUG] Checking community for:", user.uid);
-
         const q = query(
           collection(db, "communities"),
           where("ownerId", "==", user.uid)
         );
         const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        const proceed = window.confirm(
+          "You already have a community. Do you want to create another?"
+        );
+        if (!proceed) navigate("/my-communities");
+        else setLoading(false);
+      } else {
+        setLoading(false);
+      }
 
-        if (!snapshot.empty) {
-          console.log("[DEBUG] Existing community found — redirecting...");
-          navigate("/communities");
-        } else {
-          console.log("[DEBUG] No existing community — show form");
-          setLoading(false);
-        }
       } catch (err) {
         console.error("[ERROR] Firestore query failed:", err);
         setLoading(false);
@@ -64,6 +60,7 @@ export default function Onboarding() {
     checkExistingCommunity();
   }, [user, authReady, navigate]);
 
+  // ✅ Handle form input
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -75,9 +72,9 @@ export default function Onboarding() {
     }));
   };
 
+  // ✅ Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!user) {
       alert("You must be logged in to create a community.");
       navigate("/login");
@@ -101,36 +98,25 @@ export default function Onboarding() {
         createdAt: serverTimestamp(),
       });
 
-      alert("Community created successfully!");
-      navigate("/communities");
+      alert("🎉 Community created successfully!");
+      navigate("/my-communities"); // redirect after creation ✅
     } catch (error: any) {
       console.error("Error creating community:", error);
-      if (error.code === "permission-denied") {
-        alert(
-          "You don’t have permission to create a community. Check Firestore rules."
-        );
-      } else {
-        alert("Failed to create community. Please try again.");
-      }
+      alert("Failed to create community. Please try again.");
     }
   };
 
   if (loading) return <p>🔍 Checking your community access...</p>;
 
   return (
-    <div className="onboarding" style={{ padding: "2rem" }}>
-      <h2>Create a New Community</h2>
+    <div className="onboarding p-8 min-h-screen bg-gray-50 flex flex-col items-center">
+      <h2 className="text-3xl font-bold mb-8">Create a New Community</h2>
 
       <form
         onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "1rem",
-          maxWidth: "500px",
-        }}
+        className="bg-white shadow-md rounded-2xl p-6 flex flex-col gap-4 w-full max-w-md"
       >
-        <label>
+        <label className="flex flex-col gap-1">
           Community Name:
           <input
             type="text"
@@ -138,29 +124,32 @@ export default function Onboarding() {
             value={formData.name}
             onChange={handleChange}
             required
+            className="border rounded-lg p-2"
           />
         </label>
 
-        <label>
+        <label className="flex flex-col gap-1">
           Work Associated / College:
           <input
             type="text"
             name="workAssociated"
             value={formData.workAssociated}
             onChange={handleChange}
+            className="border rounded-lg p-2"
           />
         </label>
 
-        <label>
+        <label className="flex flex-col gap-1">
           Description:
           <textarea
             name="description"
             value={formData.description}
             onChange={handleChange}
+            className="border rounded-lg p-2"
           />
         </label>
 
-        <label>
+        <label className="flex flex-col gap-1">
           Member Cap:
           <input
             type="number"
@@ -168,10 +157,11 @@ export default function Onboarding() {
             value={formData.memberCap}
             onChange={handleChange}
             min="1"
+            className="border rounded-lg p-2"
           />
         </label>
 
-        <label>
+        <label className="flex flex-col gap-1">
           Roles (comma-separated):
           <input
             type="text"
@@ -179,10 +169,11 @@ export default function Onboarding() {
             value={formData.roles}
             onChange={handleChange}
             placeholder="e.g. admin, moderator, member"
+            className="border rounded-lg p-2"
           />
         </label>
 
-        <label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <label className="flex items-center gap-2">
           <input
             type="checkbox"
             name="chatEnabled"
@@ -194,14 +185,7 @@ export default function Onboarding() {
 
         <button
           type="submit"
-          style={{
-            backgroundColor: "#2563eb",
-            color: "white",
-            padding: "0.7rem",
-            borderRadius: "8px",
-            border: "none",
-            cursor: "pointer",
-          }}
+          className="bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
         >
           Create Community
         </button>

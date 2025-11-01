@@ -7,6 +7,8 @@ import CommunityList from "./pages/communityList";
 import Onboarding from "./pages/onboarding";
 import { PrivateRoute } from "./routes/PrivateRoute";
 import Navibar from "./components/Navibar";
+import CommunityDetails from "./pages/communityPage";
+import ViewCommunity from "./pages/viewCommunity";
 
 export default function App() {
   return (
@@ -43,6 +45,22 @@ export default function App() {
             </PrivateRoute>
           }
         />
+        <Route
+        path="/community/:id"
+        element={
+          <PrivateRoute>
+            <CommunityDetails />
+          </PrivateRoute>
+        }
+        />
+        <Route
+        path="/community/:id/edit"
+        element={
+          <PrivateRoute>
+            <ViewCommunity />
+          </PrivateRoute>
+        }
+      />
       </Routes>
     </>
   );

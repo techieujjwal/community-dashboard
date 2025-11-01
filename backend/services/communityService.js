@@ -85,3 +85,40 @@ export const searchCommunities = async (query) => {
 
   return results;
 };
+
+
+export const getCommunityById = async (communityId) => {
+  const communityRef = db.collection("communities").doc(communityId);
+  const communitySnap = await communityRef.get();
+
+  if (!communitySnap.exists) {
+    throw new Error("Community not found");
+  }
+
+  const communityData = communitySnap.data();
+
+  // Fetch members & their roles
+  const rolesSnapshot = await communityRef.collection("roles").get();
+  const members = rolesSnapshot.docs.map((doc) => doc.data());
+
+  // Optionally, you can later pull counts for analytics
+  const postsSnapshot = await communityRef.collection("posts").get().catch(() => null);
+  const eventsSnapshot = await communityRef.collection("events").get().catch(() => null);
+
+  return {
+    id: communityData.id,
+    name: communityData.name,
+    description: communityData.purpose || "",
+    college: communityData.college || "",
+    work: communityData.work || "",
+    isPrivate: communityData.isPrivate || false,
+    createdBy: communityData.createdBy,
+    createdAt: communityData.createdAt,
+    members,
+    stats: {
+      postsCount: postsSnapshot ? postsSnapshot.size : 0,
+      eventsCount: eventsSnapshot ? eventsSnapshot.size : 0,
+      totalMembers: members.length,
+    },
+  };
+};

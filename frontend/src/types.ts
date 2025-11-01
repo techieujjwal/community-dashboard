@@ -1,9 +1,11 @@
-// src/types.ts
 export interface Community {
   id: string;
   name: string;
-  description: string;
-  members: string[];
-  createdBy: string;
-  createdAt: string; // or Firebase Timestamp type if you use one
+  college?: string;
+  work?: string;
+  purpose?: string;
+  isPrivate?: boolean;
+  createdBy?: string;
+  createdAt?: any;
+  description?: string; // optional fallback for older data
 }
