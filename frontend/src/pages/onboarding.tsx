@@ -106,19 +106,66 @@ export default function Onboarding() {
     }
   };
 
-  if (loading) return <p>🔍 Checking your community access...</p>;
+  const containerStyle = {
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '2rem',
+    fontFamily: 'system-ui, -apple-system, sans-serif'
+  };
+
+  const formStyle = {
+    backgroundColor: '#1e293b',
+    padding: '3rem',
+    borderRadius: '1rem',
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.4)',
+    border: '1px solid #334155',
+    width: '100%',
+    maxWidth: '500px'
+  };
+
+  const inputStyle = {
+    width: '100%',
+    padding: '1rem',
+    margin: '0.5rem 0 1rem',
+    backgroundColor: '#334155',
+    border: '1px solid #475569',
+    borderRadius: '0.5rem',
+    color: '#e2e8f0',
+    fontSize: '1rem'
+  };
+
+  const buttonStyle = {
+    width: '100%',
+    padding: '1rem',
+    marginTop: '1.5rem',
+    backgroundColor: '#1e40af',
+    color: 'white',
+    border: 'none',
+    borderRadius: '0.5rem',
+    fontSize: '1rem',
+    fontWeight: '600',
+    cursor: 'pointer'
+  };
+
+  if (loading) return (
+    <div style={containerStyle}>
+      <p style={{ color: '#e2e8f0', fontSize: '1.125rem' }}>🔍 Checking your community access...</p>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-lg">
-        <h2 className="text-3xl font-bold text-center mb-8 text-blue-700">
+    <div style={containerStyle}>
+      <div style={formStyle}>
+        <h2 style={{ fontSize: '2rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '2rem', color: '#f1f5f9' }}>
           Create a New Community
         </h2>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          {/* Community Name */}
+        <form onSubmit={handleSubmit}>
           <div>
-            <label className="block text-gray-700 font-medium mb-1">
+            <label style={{ display: 'block', color: '#e2e8f0', fontWeight: '500', marginBottom: '0.5rem' }}>
               Community Name
             </label>
             <input
@@ -127,14 +174,13 @@ export default function Onboarding() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+              style={inputStyle}
               placeholder="Enter community name"
             />
           </div>
 
-          {/* Work Associated / College */}
           <div>
-            <label className="block text-gray-700 font-medium mb-1">
+            <label style={{ display: 'block', color: '#e2e8f0', fontWeight: '500', marginBottom: '0.5rem' }}>
               Work Associated / College
             </label>
             <input
@@ -142,29 +188,26 @@ export default function Onboarding() {
               name="workAssociated"
               value={formData.workAssociated}
               onChange={handleChange}
-              className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+              style={inputStyle}
               placeholder="e.g., Tech Club, Engineering Dept"
             />
           </div>
 
-          {/* Description */}
           <div>
-            <label className="block text-gray-700 font-medium mb-1">
+            <label style={{ display: 'block', color: '#e2e8f0', fontWeight: '500', marginBottom: '0.5rem' }}>
               Description
             </label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
-              rows={3}
+              style={{ ...inputStyle, minHeight: '100px', resize: 'vertical' }}
               placeholder="Briefly describe your community..."
             />
           </div>
 
-          {/* Member Cap */}
           <div>
-            <label className="block text-gray-700 font-medium mb-1">
+            <label style={{ display: 'block', color: '#e2e8f0', fontWeight: '500', marginBottom: '0.5rem' }}>
               Member Cap
             </label>
             <input
@@ -173,14 +216,13 @@ export default function Onboarding() {
               value={formData.memberCap}
               onChange={handleChange}
               min="1"
-              className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+              style={inputStyle}
               placeholder="Max number of members"
             />
           </div>
 
-          {/* Roles */}
           <div>
-            <label className="block text-gray-700 font-medium mb-1">
+            <label style={{ display: 'block', color: '#e2e8f0', fontWeight: '500', marginBottom: '0.5rem' }}>
               Roles (comma-separated)
             </label>
             <input
@@ -189,27 +231,22 @@ export default function Onboarding() {
               value={formData.roles}
               onChange={handleChange}
               placeholder="e.g., admin, moderator, member"
-              className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+              style={inputStyle}
             />
           </div>
 
-          {/* Chat Toggle */}
-          <div className="flex items-center gap-2">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '1rem 0' }}>
             <input
               type="checkbox"
               name="chatEnabled"
               checked={formData.chatEnabled}
               onChange={handleChange}
-              className="h-4 w-4 accent-blue-600"
+              style={{ width: '1rem', height: '1rem' }}
             />
-            <span className="text-gray-700 font-medium">Enable Chat</span>
+            <span style={{ color: '#e2e8f0', fontWeight: '500' }}>Enable Chat</span>
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-semibold mt-3"
-          >
+          <button type="submit" style={buttonStyle}>
             Create Community
           </button>
         </form>

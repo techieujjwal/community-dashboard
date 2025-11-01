@@ -6,6 +6,7 @@ import Signup from "./pages/signup";
 import Dashboard from "./pages/dashboard";
 import CommunityList from "./pages/communityList";
 import Onboarding from "./pages/onboarding";
+import Profile from "./pages/profile";
 import { PrivateRoute } from "./routes/PrivateRoute";
 import Navibar from "./components/ui/Navibar";
 import CommunityDetails from "./pages/communityPage";
@@ -44,6 +45,14 @@ export default function App() {
           element={
             <PrivateRoute>
               <Onboarding />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <Profile />
             </PrivateRoute>
           }
         />

@@ -58,56 +58,71 @@ export default function CommunityList() {
     fetchRole();
   }, [user, authReady, navigate]);
 
+  const containerStyle = {
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+    padding: '2rem',
+    fontFamily: 'system-ui, -apple-system, sans-serif'
+  };
+
+  const cardStyle = {
+    backgroundColor: '#1e293b',
+    padding: '2rem',
+    borderRadius: '1rem',
+    border: '1px solid #334155',
+    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3)',
+    marginBottom: '1.5rem'
+  };
+
+  const buttonStyle = {
+    backgroundColor: '#1e40af',
+    color: 'white',
+    padding: '0.75rem 1.5rem',
+    borderRadius: '0.5rem',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    fontWeight: '600',
+    marginRight: '1rem'
+  };
+
   return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">My Communities</h1>
-        <button
-          onClick={() => navigate("/onboarding")}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
-        >
-          + Create New Community
-        </button>
-      </div>
+    <div style={containerStyle}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#f1f5f9' }}>My Communities</h1>
+          <button onClick={() => navigate("/onboarding")} style={buttonStyle}>
+            + Create New Community
+          </button>
+        </div>
 
-      {/* Community List */}
-      {communities.length === 0 ? (
-        <p className="text-gray-500">You haven’t created any communities yet.</p>
-      ) : (
-        <ul className="space-y-4">
-          {communities.map((community) => (
-            <li
-              key={community.id}
-              className="p-5 border rounded-lg shadow-sm hover:shadow-md transition bg-white"
-            >
-              <h2 className="text-xl font-semibold text-gray-800">
-                {community.name}
-              </h2>
-              <p className="text-gray-600 mb-3">
-                {community.description || "No description available."}
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => navigate(`/community/${community.id}`)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
-                >
-                  View
-                </button>
-
-                {(userRole === "admin" || userRole === "creator") && (
-                  <button
-                    onClick={() => navigate(`/community/edit/${community.id}`)}
-                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition"
-                  >
-                    Edit
+        {communities.length === 0 ? (
+          <p style={{ color: '#94a3b8', fontSize: '1.125rem', textAlign: 'center', padding: '3rem' }}>You haven't created any communities yet.</p>
+        ) : (
+          <div>
+            {communities.map((community) => (
+              <div key={community.id} style={cardStyle}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: '600', color: '#f1f5f9', marginBottom: '1rem' }}>
+                  {community.name}
+                </h2>
+                <p style={{ color: '#94a3b8', marginBottom: '1.5rem' }}>
+                  {community.description || "No description available."}
+                </p>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <button onClick={() => navigate(`/community/${community.id}`)} style={buttonStyle}>
+                    View
                   </button>
-                )}
+                  {(userRole === "admin" || userRole === "creator") && (
+                    <button onClick={() => navigate(`/community/edit/${community.id}`)} style={{ ...buttonStyle, backgroundColor: '#059669' }}>
+                      Edit
+                    </button>
+                  )}
+                </div>
               </div>
-            </li>
-          ))}
-        </ul>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
