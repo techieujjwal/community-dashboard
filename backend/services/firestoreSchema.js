@@ -1,94 +1,169 @@
-//services/firestoreSchema.js
+// ===============================
 // FIRESTORE COLLECTION NAMES
+// ===============================
 export const collections = {
   USERS: "users",
   COMMUNITIES: "communities",
   MEMBERS: "members",
   ROLES: "roles",
   RECOMMENDATIONS: "recommendations",
+  EVENTS: "events",
+  POSTS: "posts",
+  CHATS: "chats",
+  ANALYTICS: "analytics",
 };
 
+// ===============================
 // USER SCHEMA
-// EACH USER DOCUMENT REPRESENTS ONE AUTHENTICATED ACCOUNT
+// ===============================
+// Represents a single authenticated user.
 export const userSchema = {
-  name: "",                      // FULL NAME
-  email: "",                     // USER'S EMAIL (FROM GOOGLE AUTH)
-  bio: "",                       // SHORT INTRO
-  photoURL: "",                  // DISPLAY PICTURE URL
-  authProvider: "google",        // GOOGLE / EMAIL / GITHUB
-  joinedCommunities: [],         // LIST OF JOINED COMMUNITY IDS
-  createdCommunities: [],        // LIST OF CREATED COMMUNITY IDS
-  theme: "light",                // LIGHT OR DARK MODE
-  socialLinks: {                 // OPTIONAL: FOR PROFILE PAGE
+  name: "",                      // Full name
+  email: "",                     // User's email (from Google Auth)
+  bio: "",                       // Short intro
+  photoURL: "",                  // Profile picture
+  authProvider: "google",        // google | email | github
+  joinedCommunities: [],         // List of joined community IDs
+  createdCommunities: [],        // List of created community IDs
+  theme: "light",                // light | dark
+  socialLinks: {                 // For profile section
     linkedin: "",
     github: "",
     twitter: "",
   },
-  location: "",                  // COLLEGE NAME / WORKPLACE
+  location: "",                  // College or workplace
   createdAt: new Date(),
   updatedAt: new Date(),
 };
 
+// ===============================
 // COMMUNITY SCHEMA
-// REPRESENTS A SINGLE COMMUNITY (PUBLIC OR PRIVATE)
+// ===============================
+// Represents one community (public/private)
 export const communitySchema = {
-  name: "",                      // COMMUNITY NAME
-  description: "",               // SUMMARY/PURPOSE TEXT
-  collegeOrWork: "",             // E.G., BITS PILANI / GOOGLE
-  purpose: "",                   // REASON OR THEME OF COMMUNITY
-  visibility: "public",          // PUBLIC OR PRIVATE
-  createdBy: "",                 // USERID OF CREATOR
-  adminId: "",                   // MAIN ADMIN (FOR DASHBOARD ACCESS)
-  roles: ["admin", "moderator", "member"], // ALLOWED ROLES
-  memberCount: 0,                // AUTO-INCREMENT
-  tags: [],                      // KEYWORDS (E.G. ["AI", "DESIGN"])
-  purposeTags: [],               // FOR FILTERING AND RECOMMENDATION
-  bannerURL: "",                 // OPTIONAL: HEADER IMAGE
-  isVerified: false,             // OPTIONAL: VERIFIED STATUS
+  name: "",                      // Community name
+  description: "",               // Summary/purpose
+  collegeOrWork: "",             // e.g. BITS Pilani / Google
+  purpose: "",                   // Theme or main goal
+  visibility: "public",          // public | private
+  createdBy: "",                 // User ID of creator
+  adminId: "",                   // Main admin (dashboard access)
+  roles: ["admin", "moderator", "member"], // Default roles
+  memberCount: 0,                // Auto-tracked
+  tags: [],                      // e.g. ["AI", "Design"]
+  purposeTags: [],               // Used for recommendations
+  bannerURL: "",                 // Optional banner image
+  isVerified: false,             // Optional verified status
   createdAt: new Date(),
   updatedAt: new Date(),
 };
 
+// ===============================
 // MEMBER SCHEMA
-// LINKS USERS ↔ COMMUNITIES WITH ROLE AND JOIN STATUS
+// ===============================
+// Links USERS ↔ COMMUNITIES with role & join status
 export const memberSchema = {
-  communityId: "",               // REFERENCE TO COMMUNITY
-  userId: "",                    // REFERENCE TO USER
-  role: "member",                // ADMIN / MODERATOR / MEMBER
+  communityId: "",               // Reference to community
+  userId: "",                    // Reference to user
+  role: "member",                // admin | moderator | member
   joinedAt: new Date(),
-  status: "approved",            // APPROVED / PENDING / REJECTED
-  invitedBy: "",                 // OPTIONAL: USERID WHO INVITED
+  status: "approved",            // approved | pending | rejected
+  invitedBy: "",                 // Optional: inviter's userId
 };
 
+// ===============================
 // ROLE SCHEMA
-// DEFINES PERMISSION SETS FOR CUSTOM ROLES IN A COMMUNITY
+// ===============================
+// Defines permission sets per role (custom roles allowed)
 export const roleSchema = {
-  communityId: "",               // WHICH COMMUNITY THIS APPLIES TO
-  roleName: "",                  // E.G., MODERATOR / ADMIN
+  communityId: "",               // Which community this applies to
+  roleName: "",                  // e.g. Moderator / Event Manager
   permissions: {
     canEditPosts: false,
     canInvite: false,
     canDeleteCommunity: false,
     canManageRoles: false,
     canManageMembers: false,
-    canAccessAnalytics: false,   // FOR DASHBOARD INSIGHTS
+    canAccessAnalytics: false,   // For dashboard insights
+    canManageEvents: false,      // NEW: event permissions
+    canChat: true,               // NEW: allows chat
   },
   createdAt: new Date(),
 };
 
+// ===============================
 // RECOMMENDATION SCHEMA
-// STORES RECOMMENDATION OR DISCOVERY PREFERENCES FOR EACH USER
+// ===============================
+// Stores discovery or community suggestion preferences
 export const recommendationSchema = {
-  userId: "",                    // REFERENCE TO USER
-  filters: {                     // E.G. { FIELD: "COLLEGEORWORK", VALUE: "BITS PILANI" }
+  userId: "",                    // Reference to user
+  filters: {                     // e.g. { field: "collegeOrWork", value: "BITS Pilani" }
     field: "",
     value: "",
   },
-  suggestedCommunities: [],      // LIST OF COMMUNITY IDS
+  suggestedCommunities: [],      // List of community IDs
   lastUpdated: new Date(),
 };
 
+// ===============================
+// EVENT SCHEMA
+// ===============================
+// Stored in subcollection: /communities/{communityId}/events
+export const eventSchema = {
+  title: "",                     // Event/workshop title
+  description: "",               // Details
+  date: new Date(),              // Scheduled time
+  createdBy: "",                 // Admin/moderator userId
+  assignedRoles: {               // Roles for specific tasks
+    organizer: "",
+    speaker: "",
+    participant: "",
+  },
+  attendees: [],                 // List of userIds
+  visibility: "public",          // public | private
+  status: "upcoming",            // upcoming | ongoing | completed
+  createdAt: new Date(),
+};
+
+// ===============================
+// POST SCHEMA
+// ===============================
+// Stored in subcollection: /communities/{communityId}/posts
+export const postSchema = {
+  authorId: "",                  // userId of author
+  content: "",                   // Text or caption
+  mediaURL: "",                  // Meme/image/video URL
+  likes: 0,
+  likedBy: [],                   // userIds
+  createdAt: new Date(),
+};
+
+// ===============================
+// CHAT SCHEMA
+// ===============================
+// Stored in subcollection: /communities/{communityId}/chats
+export const chatSchema = {
+  senderId: "",                  // userId of sender
+  message: "",                   // Message content
+  timestamp: new Date(),
+};
+
+// ===============================
+// ANALYTICS SCHEMA
+// ===============================
+// Stored in subcollection: /communities/{communityId}/analytics
+export const analyticsSchema = {
+  date: new Date(),              // Date of log
+  totalInteractions: 0,          // Overall activity
+  postCount: 0,                  // No. of posts created
+  eventCount: 0,                 // No. of events
+  memberActivity: {},            // { userId: interactionCount }
+  peakHours: [],                 // Optional: busiest times
+};
+
+// ===============================
 // EXPORT DEFAULT
+// ===============================
 export default {
   collections,
   userSchema,
@@ -96,4 +171,33 @@ export default {
   memberSchema,
   roleSchema,
   recommendationSchema,
+  eventSchema,
+  postSchema,
+  chatSchema,
+  analyticsSchema,
 };
+
+/*
+users/
+ └── {userId}
+
+communities/
+ └── {communityId}
+      ├── events/
+      │     └── {eventId}
+      ├── posts/
+      │     └── {postId}
+      ├── chats/
+      │     └── {messageId}
+      └── analytics/
+            └── {dateDocId}
+
+members/
+ └── {memberDocId}
+
+roles/
+ └── {roleDocId}
+
+recommendations/
+ └── {recommendationDocId}
+*/
