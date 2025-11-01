@@ -72,7 +72,7 @@ export default function Onboarding() {
     }));
   };
 
-  // ✅ Handle form submission
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
@@ -99,7 +99,7 @@ export default function Onboarding() {
       });
 
       alert("🎉 Community created successfully!");
-      navigate("/my-communities"); // redirect after creation ✅
+      navigate("/my-communities"); // redirect after creation
     } catch (error: any) {
       console.error("Error creating community:", error);
       alert("Failed to create community. Please try again.");
@@ -109,87 +109,111 @@ export default function Onboarding() {
   if (loading) return <p>🔍 Checking your community access...</p>;
 
   return (
-    <div className="onboarding p-8 min-h-screen bg-gray-50 flex flex-col items-center">
-      <h2 className="text-3xl font-bold mb-8">Create a New Community</h2>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-lg">
+        <h2 className="text-3xl font-bold text-center mb-8 text-blue-700">
+          Create a New Community
+        </h2>
 
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded-2xl p-6 flex flex-col gap-4 w-full max-w-md"
-      >
-        <label className="flex flex-col gap-1">
-          Community Name:
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="border rounded-lg p-2"
-          />
-        </label>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          {/* Community Name */}
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Community Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+              placeholder="Enter community name"
+            />
+          </div>
 
-        <label className="flex flex-col gap-1">
-          Work Associated / College:
-          <input
-            type="text"
-            name="workAssociated"
-            value={formData.workAssociated}
-            onChange={handleChange}
-            className="border rounded-lg p-2"
-          />
-        </label>
+          {/* Work Associated / College */}
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Work Associated / College
+            </label>
+            <input
+              type="text"
+              name="workAssociated"
+              value={formData.workAssociated}
+              onChange={handleChange}
+              className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+              placeholder="e.g., Tech Club, Engineering Dept"
+            />
+          </div>
 
-        <label className="flex flex-col gap-1">
-          Description:
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="border rounded-lg p-2"
-          />
-        </label>
+          {/* Description */}
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Description
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+              rows={3}
+              placeholder="Briefly describe your community..."
+            />
+          </div>
 
-        <label className="flex flex-col gap-1">
-          Member Cap:
-          <input
-            type="number"
-            name="memberCap"
-            value={formData.memberCap}
-            onChange={handleChange}
-            min="1"
-            className="border rounded-lg p-2"
-          />
-        </label>
+          {/* Member Cap */}
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Member Cap
+            </label>
+            <input
+              type="number"
+              name="memberCap"
+              value={formData.memberCap}
+              onChange={handleChange}
+              min="1"
+              className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+              placeholder="Max number of members"
+            />
+          </div>
 
-        <label className="flex flex-col gap-1">
-          Roles (comma-separated):
-          <input
-            type="text"
-            name="roles"
-            value={formData.roles}
-            onChange={handleChange}
-            placeholder="e.g. admin, moderator, member"
-            className="border rounded-lg p-2"
-          />
-        </label>
+          {/* Roles */}
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Roles (comma-separated)
+            </label>
+            <input
+              type="text"
+              name="roles"
+              value={formData.roles}
+              onChange={handleChange}
+              placeholder="e.g., admin, moderator, member"
+              className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
 
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            name="chatEnabled"
-            checked={formData.chatEnabled}
-            onChange={handleChange}
-          />
-          Enable Chat
-        </label>
+          {/* Chat Toggle */}
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="chatEnabled"
+              checked={formData.chatEnabled}
+              onChange={handleChange}
+              className="h-4 w-4 accent-blue-600"
+            />
+            <span className="text-gray-700 font-medium">Enable Chat</span>
+          </div>
 
-        <button
-          type="submit"
-          className="bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Create Community
-        </button>
-      </form>
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-semibold mt-3"
+          >
+            Create Community
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

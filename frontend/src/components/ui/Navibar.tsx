@@ -10,7 +10,7 @@ const Navibar = () => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
-    return () => unsubscribe();
+    return unsubscribe;
   }, [auth]);
 
   const handleLogout = async () => {
@@ -22,7 +22,7 @@ const Navibar = () => {
   };
 
   return (
-    <nav className="navbar">
+    <nav className="navbar flex justify-between p-4 bg-gray-800 text-white">
       <ul className="flex gap-4 items-center">
         <li>
           <Link to="/">Home</Link>

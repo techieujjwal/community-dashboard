@@ -3,3 +3,5 @@ config/serviceAccountKey.json
 backend/config/serviceAccountKey1.json
 backend/services/firebaseServiceAccount.json
 backend/config/services/firebaseServiceAccount.json
+backend/firestore-setup/serviceAccountKey.json
+backend/controllers/
