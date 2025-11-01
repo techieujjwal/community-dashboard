@@ -1,43 +1,49 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import Homepage from "./pages/homepage";
 import Login from "./pages/login";
 import Signup from "./pages/signup";
 import Dashboard from "./pages/dashboard";
-import Homepage from "./pages/homepage";
 import CommunityList from "./pages/communityList";
-import CreateCommunity from "./pages/createCommunity";
-import ViewCommunity from "./pages/viewCommunity";
-import EditCommunity from "./pages/editCommunity";
+import Onboarding from "./pages/onboarding";
+import { PrivateRoute } from "./routes/PrivateRoute";
+import Navibar from "./components/Navibar";
 
-function App() {
+export default function App() {
   return (
-    <div>
-      {/* Simple NavBar */}
-      <nav style={{ display: "flex", gap: "20px", padding: "10px" }}>
-        <Link to="/">Home</Link>
-        <Link to="/login">Login</Link>
-        <Link to="/signup">Signup</Link>
-        <Link to="/dashboard">Dashboard</Link>
-        <Link to="/community">Communities</Link>
-      </nav>
-
-      {/* App Routes */}
+    <>
+      <Navibar />
       <Routes>
-        {/* Public Pages */}
+        {/* Public Routes */}
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* Protected / Dashboard */}
-        <Route path="/dashboard" element={<Dashboard />} />
-
-        {/* Community CRUD */}
-        <Route path="/community" element={<CommunityList />} />
-        <Route path="/community/create" element={<CreateCommunity />} />
-        <Route path="/community/:id" element={<ViewCommunity />} />
-        <Route path="/community/:id/edit" element={<EditCommunity />} />
+        {/* Private Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/my-communities"
+          element={
+            <PrivateRoute>
+              <CommunityList />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/onboarding"
+          element={
+            <PrivateRoute>
+              <Onboarding />
+            </PrivateRoute>
+          }
+        />
       </Routes>
-    </div>
+    </>
   );
 }
-
-export default App;

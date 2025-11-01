@@ -1,47 +1,73 @@
-import { Link } from "react-router-dom";
-import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../firebase";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Signup() {
-  const handleGoogleSignup = async () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { signup, loginWithGoogle } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      const result = await signInWithPopup(auth, provider);
-      const idToken = await result.user.getIdToken();
-      const res = await fetch("http://localhost:5000/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-      const data = await res.json();
-      console.log("[RESP] Signup:", data);
+      await signup(email, password);
+      console.log("[AUTH] Signup successful, redirecting to dashboard...");
+      navigate("/dashboard");
     } catch (err) {
       console.error("Signup failed:", err);
+      alert("Could not create account. Try again.");
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    try {
+      await loginWithGoogle();
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Google signup failed:", err);
+      alert("Google signup failed. Try again.");
     }
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "100px" }}>
+    <div style={{ textAlign: "center", marginTop: "3rem" }}>
       <h2>Signup</h2>
-      <button onClick={handleGoogleSignup}>Sign up with Google</button>
-      <p>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+      <form onSubmit={handleSignup}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />{" "}
+        <br />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />{" "}
+        <br />
+        <button type="submit">Signup</button>
+      </form>
+
+      <p>or</p>
+
+      <button
+        onClick={handleGoogleSignup}
+        style={{
+          background: "#4285F4",
+          color: "white",
+          padding: "0.6rem 1rem",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+        }}
+      >
+        Sign up with Google
+      </button>
     </div>
   );
 }
-
-// const styles: Record<string, React.CSSProperties> = {
-//   container: {
-//     display: "flex",
-//     flexDirection: "column",
-//     alignItems: "center",
-//     justifyContent: "center",
-//     minHeight: "100vh",
-//   },
-//   form: { display: "flex", flexDirection: "column", width: "300px" },
-//   input: { margin: "10px 0", padding: "10px", fontSize: "16px" },
-//   button: { background: "red", color: "white", padding: "10px", border: "none" },
-//   link: { color: "gold" },
-// };

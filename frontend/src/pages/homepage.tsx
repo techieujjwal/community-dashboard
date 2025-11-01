@@ -1,27 +1,16 @@
-import { Link } from "react-router-dom";
-
+import { useAuth } from "../hooks/useAuth";
 
 export default function Homepage() {
+  const { user } = useAuth();
+
   return (
-    <div style={{ textAlign: "center", marginTop: "100px" }}>
+    <div style={{ textAlign: "center", marginTop: "3rem" }}>
       <h1>Welcome to the Community Engagement Hub</h1>
-      <p>Sign up or log in to explore communities and analytics.</p>
+      <p>
+        {user
+          ? "Explore your communities and analytics from the Dashboard."
+          : "Sign up or log in to explore communities and analytics."}
+      </p>
     </div>
   );
 }
-
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100vh",
-    backgroundColor: "#f5f5f5",
-  },
-  heading: {
-    fontSize: "3rem",
-    color: "#333",
-    fontFamily: "Arial, sans-serif",
-  },
-};

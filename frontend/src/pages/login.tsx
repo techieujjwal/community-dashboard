@@ -1,81 +1,75 @@
-import { Link, useNavigate } from "react-router-dom";
-import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../firebase";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await login(email, password);
+      console.log("[AUTH] Login successful, redirecting to dashboard...");
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Login failed:", err);
+      alert("Invalid email or password");
+    }
+  };
 
   const handleGoogleLogin = async () => {
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      const idToken = await user.getIdToken();
-
-      console.log("[TOKEN] Firebase ID Token:", idToken);
-
-      const res = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-
-      const data = await res.json();
-      console.log("[RESP] Backend response:", data);
-
-      if (res.ok) {
-        navigate("/dashboard");
-      } else {
-        alert(data.error || "Login failed!");
-      }
+      await loginWithGoogle();
+      console.log("[AUTH] Google login successful, redirecting...");
+      navigate("/dashboard");
     } catch (err) {
-      console.error("[FAILED] Login failed:", err);
+      console.error("Google login failed:", err);
+      alert("Google login failed. Try again.");
     }
   };
 
   return (
-    <div style={styles.container}>
+    <div style={{ textAlign: "center", marginTop: "3rem" }}>
       <h2>Login</h2>
 
-      <form style={styles.form}>
-        <input type="email" placeholder="Email" style={styles.input} disabled />
-        <input type="password" placeholder="Password" style={styles.input} disabled />
-        <button type="button" style={styles.button} onClick={handleGoogleLogin}>
-          Sign in with Google
-        </button>
+      <form onSubmit={handleLogin}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />{" "}
+        <br />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />{" "}
+        <br />
+        <button type="submit">Login</button>
       </form>
 
-      <p>
-        Don’t have an account?{" "}
-        <Link to="/signup" style={styles.link}>
-          Sign up here
-        </Link>
-      </p>
+      <p>or</p>
+
+      <button
+        onClick={handleGoogleLogin}
+        style={{
+          background: "#4285F4",
+          color: "white",
+          padding: "0.6rem 1rem",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+        }}
+      >
+        Continue with Google
+      </button>
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "100vh",
-  },
-  form: { display: "flex", flexDirection: "column", width: "300px" },
-  input: {
-    margin: "10px 0",
-    padding: "10px",
-    fontSize: "16px",
-  },
-  button: {
-    background: "#4285F4",
-    color: "white",
-    padding: "10px",
-    border: "none",
-    cursor: "pointer",
-  },
-  link: { color: "red" },
-};

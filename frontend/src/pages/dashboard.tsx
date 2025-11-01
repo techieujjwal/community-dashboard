@@ -1,62 +1,71 @@
-import { useEffect, useState } from "react";
-import { auth } from "../firebase";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Dashboard() {
-  const [profile, setProfile] = useState<any>(null);
-  const [communities, setCommunities] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { user, authReady } = useAuth();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-      const idToken = await user.getIdToken();
+  // Wait until Firebase Auth initializes
+  if (!authReady) {
+    return <div className="text-center mt-20 text-lg">Loading...</div>;
+  }
 
-      try {
-        const [profileRes, communityRes] = await Promise.all([
-          fetch("http://localhost:5000/api/profile/me", {
-            headers: { Authorization: `Bearer ${idToken}` },
-          }),
-          fetch("http://localhost:5000/api/community", {
-            headers: { Authorization: `Bearer ${idToken}` },
-          }),
-        ]);
+  // If user isn’t logged in, redirect or show fallback
+  if (!user) {
+    return (
+      <div className="text-center mt-20 text-lg">
+        Please log in first. <br />
+        <button
+          onClick={() => navigate("/login")}
+          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg"
+        >
+          Go to Login
+        </button>
+      </div>
+    );
+  }
 
-        const profileData = await profileRes.json();
-        const communityData = await communityRes.json();
-
-        setProfile(profileData.user);
-        setCommunities(communityData.communities || []);
-        console.log(profileData, communityData);
-
-      } catch (err) {
-        console.error("Error fetching dashboard data:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) return <p>Loading...</p>;
-
+  // Once authReady = true & user exists
   return (
-    <div style={{ padding: "30px" }}>
-      <h1>Dashboard</h1>
-      <h3>👤 Profile</h3>
-      <pre>{JSON.stringify(profile, null, 2)}</pre>
+    <div className="p-8 min-h-screen bg-gray-50">
+      <h1 className="text-3xl font-bold mb-8 text-center">
+        Welcome, {user.displayName || user.email} 👋
+      </h1>
 
-      <h3>🌐 Communities</h3>
-      {communities.length ? (
-        <ul>
-          {communities.map((c) => (
-            <li key={c.id}>{c.name}</li>
-          ))}
-        </ul>
-      ) : (
-        <p>No communities yet.</p>
-      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Communities Card */}
+        <div
+          onClick={() => navigate("/communities")}
+          className="bg-white shadow-md rounded-2xl p-6 cursor-pointer hover:shadow-lg transition"
+        >
+          <h2 className="text-xl font-semibold mb-2">Communities</h2>
+          <p className="text-gray-600">
+            Explore and join existing communities of like-minded learners.
+          </p>
+        </div>
+
+        {/* Create Community Card */}
+        <div
+          onClick={() => navigate("/onboarding")}
+          className="bg-white shadow-md rounded-2xl p-6 cursor-pointer hover:shadow-lg transition"
+        >
+          <h2 className="text-xl font-semibold mb-2">Create a Community</h2>
+          <p className="text-gray-600">
+            Build your own community and invite members to collaborate.
+          </p>
+        </div>
+
+        {/* Onboarding Shortcut */}
+        <div
+          onClick={() => navigate("/onboarding")}
+          className="bg-white shadow-md rounded-2xl p-6 cursor-pointer hover:shadow-lg transition"
+        >
+          <h2 className="text-xl font-semibold mb-2">Onboarding</h2>
+          <p className="text-gray-600">
+            Complete your onboarding process to get personalized recommendations.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

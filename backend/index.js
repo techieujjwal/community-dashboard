@@ -10,6 +10,7 @@ import eventRoutes from "./routes/events.js";
 import postRoutes from "./routes/posts.js";
 import chatRoutes from "./routes/chats.js";
 import dashboardRoutes from "./routes/dashboard.js"
+import onboardingRoutes from "./routes/onboarding.js";
 
 // Middleware Imports
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -34,6 +35,7 @@ app.use("/api/events", verifyToken, eventRoutes);
 app.use("/api/posts", verifyToken, postRoutes);
 app.use("/api/chat", verifyToken, chatRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/onboarding", onboardingRoutes);
 
 // Health Check Route
 app.get("/", (req, res) => res.send("[SERVER] Community Engagement Hub Backend is running"));
