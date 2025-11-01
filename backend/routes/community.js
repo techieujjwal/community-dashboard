@@ -13,7 +13,7 @@ const router = express.Router();
 router.get("/", verifyToken, getAllCommunities);
 router.post("/create", verifyToken, createCommunity);
 router.put("/edit/:id", verifyToken, editCommunity);
-// router.post("/:id/interact", verifyToken, logCommunityInteraction);
+router.post("/:id/interact", verifyToken, logCommunityInteraction);
 router.get("/analytics/:id", verifyToken, getCommunityAnalytics);
 
 export default router;

@@ -1,6 +1,5 @@
 //controllers/analyticsController.js
-import { db } from "../services/firebase.js";
-import { doc, getDoc, collection, getDocs } from "firebase/firestore";
+import { db, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "../services/firebase.js";
 
 // Get overall community analytics (for admin dashboard)
 export const getCommunityAnalytics = async (req, res) => {

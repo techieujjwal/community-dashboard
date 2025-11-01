@@ -1,6 +1,5 @@
 //controllers/postController.js
-import { db } from "../services/firebase.js";
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, arrayUnion } from "firebase/firestore";
+import { db, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "../services/firebase.js";
 
 // Create a new post
 export const createPost = async (req, res) => {

@@ -1,4 +1,4 @@
-// communityService.js
+// communityController.js
 import { admin } from "../services/firebase.js";
 const db = admin.firestore();
 
@@ -61,34 +61,34 @@ export const editCommunity = async (req, res) => {
 };
 
 // Log member interaction with dashboard
-// export const logCommunityInteraction = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const userId = req.user?.uid;
+export const logCommunityInteraction = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?.uid;
 
-//     const docRef = db.collection("communities").doc(id);
-//     const communitySnap = await docRef.get();
+    const docRef = db.collection("communities").doc(id);
+    const communitySnap = await docRef.get();
 
-//     if (!communitySnap.exists) {
-//       return res.status(404).json({ success: false, error: "Community not found" });
-//     }
+    if (!communitySnap.exists) {
+      return res.status(404).json({ success: false, error: "Community not found" });
+    }
 
-//     const logEntry = {
-//       userId,
-//       timestamp: new Date().toISOString(),
-//       action: "Viewed Dashboard"
-//     };
+    const logEntry = {
+      userId,
+      timestamp: new Date().toISOString(),
+      action: "Viewed Dashboard"
+    };
 
-//     await docRef.update({
-//       activityLogs: admin.firestore.FieldValue.arrayUnion(logEntry)
-//     });
+    await docRef.update({
+      activityLogs: admin.firestore.FieldValue.arrayUnion(logEntry)
+    });
 
-//     res.json({ success: true, message: "Interaction logged successfully" });
-//   } catch (err) {
-//     console.error("[ERROR] Logging interaction:", err);
-//     res.status(500).json({ success: false, error: err.message });
-//   }
-// };
+    res.json({ success: true, message: "Interaction logged successfully" });
+  } catch (err) {
+    console.error("[ERROR] Logging interaction:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
 
 // Get community analytics (auto logs interaction)
 export const getCommunityAnalytics = async (req, res) => {

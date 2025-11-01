@@ -1,5 +1,4 @@
-import { db } from "../services/firebase.js";
-import { doc, getDoc } from "firebase/firestore";
+import { db, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "../services/firebase.js";
 
 export const getUserProfile = async (req, res) => {
   try {

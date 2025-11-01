@@ -1,6 +1,5 @@
 //controllers/eventController.js
-import { db } from "../services/firebase.js";
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { db, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "../services/firebase.js";
 
 // Create new event
 export const createEvent = async (req, res) => {
