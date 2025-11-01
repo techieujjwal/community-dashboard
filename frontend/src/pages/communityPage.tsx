@@ -33,10 +33,11 @@ export default function CommunityDetails() {
       <Card>
         <CardHeader>{community.name}</CardHeader>
         <CardContent>
-          <p><strong>Purpose:</strong> {community.purpose}</p>
-          <p><strong>College:</strong> {community.college}</p>
-          <p><strong>Work:</strong> {community.work}</p>
-          <p><strong>Role:</strong> {role || "member"}</p>
+        <p><strong>Work / College:</strong> {community.workAssociated || "—"}</p>
+        <p><strong>Description:</strong> {community.description || "—"}</p>
+        <p><strong>Member Cap:</strong> {community.memberCap || "—"}</p>
+        <p><strong>Roles:</strong> {community.roles?.join(", ") || "—"}</p>
+        <p><strong>Chat Enabled:</strong> {community.chatEnabled ? "Yes" : "No"}</p>
 
           {role === "admin" && (
             <div className="mt-4 p-4 border rounded-md bg-gray-50">

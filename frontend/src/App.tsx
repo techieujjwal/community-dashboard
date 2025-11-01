@@ -1,3 +1,4 @@
+// src/App.tsx
 import { Routes, Route } from "react-router-dom";
 import Homepage from "./pages/homepage";
 import Login from "./pages/login";
@@ -6,21 +7,22 @@ import Dashboard from "./pages/dashboard";
 import CommunityList from "./pages/communityList";
 import Onboarding from "./pages/onboarding";
 import { PrivateRoute } from "./routes/PrivateRoute";
-import Navibar from "./components/Navibar";
+import Navibar from "./components/ui/Navibar";
 import CommunityDetails from "./pages/communityPage";
 import ViewCommunity from "./pages/viewCommunity";
+import Analytics from "./pages/admin/analytics";
 
 export default function App() {
   return (
     <>
       <Navibar />
       <Routes>
-        {/* Public Routes */}
+        {/* 🌐 Public Routes */}
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* Private Routes */}
+        {/* 🔒 Private Routes */}
         <Route
           path="/dashboard"
           element={
@@ -46,21 +48,37 @@ export default function App() {
           }
         />
         <Route
-        path="/community/:id"
-        element={
-          <PrivateRoute>
-            <CommunityDetails />
-          </PrivateRoute>
-        }
+          path="/community/:id"
+          element={
+            <PrivateRoute>
+              <CommunityDetails />
+            </PrivateRoute>
+          }
         />
         <Route
-        path="/community/:id/edit"
-        element={
-          <PrivateRoute>
-            <ViewCommunity />
-          </PrivateRoute>
-        }
-      />
+          path="/community/:id/edit"
+          element={
+            <PrivateRoute>
+              <ViewCommunity />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/analytics"
+          element={
+            <PrivateRoute>
+              <Analytics />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/analytics"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <Analytics />
+            </PrivateRoute>
+          }
+/>
       </Routes>
     </>
   );

@@ -9,11 +9,17 @@ import {
   getAuth,
   User,
 } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { createContext, useContext, useEffect, useState } from "react";
+import { db } from "../firebase";
+
+interface ExtendedUser extends User {
+  role?: string;
+}
 
 interface AuthContextType {
-  user: User | null;
-  authReady: boolean;  // ✅ replaced 'loading' for clarity
+  user: ExtendedUser | null;
+  authReady: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
@@ -31,13 +37,36 @@ const AuthContext = createContext<AuthContextType>({
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const auth = getAuth();
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<ExtendedUser | null>(null);
   const [authReady, setAuthReady] = useState(false);
 
+  // 🔹 Fetch user + role from Firestore
+  const fetchUserData = async (firebaseUser: User) => {
+    const userRef = doc(db, "users", firebaseUser.uid);
+    const snap = await getDoc(userRef);
+
+    if (snap.exists()) {
+      const roleData = snap.data().role || "member";
+      setUser({ ...firebaseUser, role: roleData });
+    } else {
+      // Default role: member
+      await setDoc(userRef, {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        role: "member",
+      });
+      setUser({ ...firebaseUser, role: "member" });
+    }
+  };
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
-      setAuthReady(true); // ✅ Firebase finished checking auth state
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        await fetchUserData(firebaseUser);
+      } else {
+        setUser(null);
+      }
+      setAuthReady(true);
     });
     return unsubscribe;
   }, [auth]);
@@ -47,12 +76,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signup = async (email: string, password: string) => {
-    await createUserWithEmailAndPassword(auth, email, password);
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await setDoc(doc(db, "users", cred.user.uid), {
+      uid: cred.user.uid,
+      email,
+      role: "member",
+    });
   };
 
   const loginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    const cred = await signInWithPopup(auth, provider);
+    const userRef = doc(db, "users", cred.user.uid);
+    const snap = await getDoc(userRef);
+    if (!snap.exists()) {
+      await setDoc(userRef, {
+        uid: cred.user.uid,
+        email: cred.user.email,
+        role: "member",
+      });
+    }
   };
 
   const logout = async () => {
