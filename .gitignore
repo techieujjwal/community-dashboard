@@ -30,7 +30,7 @@ yarn-error.log*
 *.sln
 *.sw?
 
-src/
+# src/
 serviceAccountKey.json
 
 config/serviceAccountKey.json
